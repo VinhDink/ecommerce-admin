@@ -10,7 +10,6 @@ const CategoryManager = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState("");
   const [_id, setId] = useState("");
-  const [image, setImage] = useState("");
   const [createName, setCreateName] = useState("");
   const [att, createAtt] = useState("");
 
@@ -29,15 +28,6 @@ const CategoryManager = () => {
     getData();
   }, []);
 
-  const handleAddCategory = (id) => {
-    console.log("Add Category clicked");
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setImage(file);
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log("hello");
@@ -47,22 +37,18 @@ const CategoryManager = () => {
       attCate: att,
     });
     closeUpdateModal();
+    window.location.reload();
   };
 
   const handleCreate = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-
-    formData.append("name", createName);
-    formData.append("image", image);
-
     try {
-      const response = await axios.post("category", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", // Set the content type for file upload
-        },
-      });
+      const response = await axios.post("category",
+        {
+          name: createName,
+          attCate: att,
+        });
 
       if (response.status === 200) {
         // Handle success
@@ -74,8 +60,9 @@ const CategoryManager = () => {
     } catch (error) {
       console.error("An error occurred:", error);
     }
-
+    createAtt("");
     closeCreateModal();
+    window.location.reload();
   };
 
   const openUpdateModal = (name, id) => {
@@ -170,7 +157,7 @@ const CategoryManager = () => {
       </Modal>
       <Modal show={showCreate} onHide={closeCreateModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Update Category</Modal.Title>
+          <Modal.Title>Create Category</Modal.Title>
         </Modal.Header>
         <form className="pm__modal-form" onSubmit={handleCreate}>
           <Modal.Body>
@@ -184,12 +171,16 @@ const CategoryManager = () => {
               value={createName.name}
               onChange={(e) => setCreateName(e.target.value)}
             />
-            <label htmlFor="image">Product Image</label>
+            <br/>
+            <label htmlFor="name">Attribute</label>
             <input
-              type="file"
-              name="image"
-              accept=".jpg, .jpeg, .png"
-              onChange={handleFileChange}
+              type="text"
+              id="att"
+              name="att"
+              placeholder="Attribute"
+              className="pm__form-input"
+              value={att}
+              onChange={(e) => createAtt(e.target.value)}
             />
           </Modal.Body>
           <Modal.Footer>
